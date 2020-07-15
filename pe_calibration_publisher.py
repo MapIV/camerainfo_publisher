@@ -53,7 +53,8 @@ class PeCameraInfoPublisher:
                                                    0.0)
             for j in range(3):
                 for i in range(3):
-                    P[j, i] = ncm[j, i]
+                    #P[j, i] = ncm[j, i]
+                    P[j, i] = intrinsics[j, i]
 
             camera_info_msg.P = P.flatten().tolist()
         print(camera_info_msg.P)
