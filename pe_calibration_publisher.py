@@ -41,25 +41,26 @@ class PeCameraInfoPublisher:
         camera_info_msg.K = calib_data["camera_matrix"]["data"]
         camera_info_msg.D = calib_data["distortion_coefficients"]["data"]
         camera_info_msg.R = calib_data["rectification_matrix"]["data"]
-        camera_info_msg.P = calib_data["projection_matrix"]["data"]
+        if "projection_matrix" in calib_data:
+            camera_info_msg.P = calib_data["projection_matrix"]["data"]
+        else:
+            P = np.zeros((3, 4), dtype=np.float64)
+            intrinsics = np.array(camera_info_msg.K, dtype=np.float64, copy=True).reshape((3, 3))
+            distortion = np.array(camera_info_msg.D, dtype=np.float64, copy=True).reshape((len(camera_info_msg.D), 1))
+            ncm, _ = cv2.getOptimalNewCameraMatrix(intrinsics,
+                                                   distortion,
+                                                   (camera_info_msg.width, camera_info_msg.height),
+                                                   0.0)
+            for j in range(3):
+                for i in range(3):
+                    P[j, i] = ncm[j, i]
+
+            camera_info_msg.P = P.flatten().tolist()
+        print(camera_info_msg.P)
+
         camera_info_msg.distortion_model = calib_data["camera_model"]
         return camera_info_msg
 
-    def calculate_omc(self, camera_info_msg):
-        P = np.zeros((3, 4), dtype=np.float64)
-        intrinsics = np.array(camera_info_msg.K, dtype=np.float64, copy=True).reshape((3, 3))
-        distortion = np.array(camera_info_msg.D, dtype=np.float64, copy=True).reshape((len(camera_info_msg.D), 1))
-        ncm, _ = cv2.getOptimalNewCameraMatrix(intrinsics,
-                                               distortion,
-                                               (camera_info_msg.width, camera_info_msg.height),
-                                               0.0)
-        for j in range(3):
-            for i in range(3):
-                P[j, i] = ncm[j, i]
-                # P[j, i] = intrinsics[j, i]
-        print(P.flatten().tolist())
-
-        
 
 if __name__ == "__main__":
     import argparse
