@@ -2,11 +2,11 @@
 
 ### How to run
 
-`rosrun pe_camerainfo_publsher pe_calibration_publisher.py /PATH/TO/ros.yaml NAMESPACE IMAGE_TOPIC`
+`rosrun pe_camerainfo_publsher pe_calibration_publisher.py _calibration_yaml:=/PATH/TO/ros.yaml _namespace:=NAMESPACE _input_topic:=IMAGE_TOPIC`
 
 i.e.
 
-`rosrun pe_camerainfo_publsher pe_calibration_publisher.py /home/data/calibration/camera1.yaml camera1 image_raw`
+`rosrun pe_camerainfo_publsher pe_calibration_publisher.py _calibration_yaml:=/home/data/calibration/camera1.yaml _namespace:=camera1 _input_topic:=image_raw`
 
 
 ### ROS YAML format
