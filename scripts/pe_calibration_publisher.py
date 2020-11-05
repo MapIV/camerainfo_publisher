@@ -1,3 +1,8 @@
+#!/usr/bin/env python
+from __future__ import print_function
+
+import roslib
+roslib.load_manifest('pe_camerainfo_publisher')
 
 import rospy
 import yaml
@@ -9,7 +14,7 @@ from sensor_msgs.msg import Image
 class PeCameraInfoPublisher:
     def __init__(self, namespace, input_topic, calibration_yaml):
         
-        rospy.init_node("pe_camera_info_publisher", anonymous=True)
+        rospy.init_node("pe_camerainfo_publisher", anonymous=True)
 
         self.__camera_info_msg = self.__parse_yaml(calibration_yaml)
         rospy.loginfo("YAML Parsed correctly: {}".format(calibration_yaml))
