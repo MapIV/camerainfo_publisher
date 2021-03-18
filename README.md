@@ -8,6 +8,9 @@ i.e.
 
 `rosrun pe_camerainfo_publsher pe_calibration_publisher.py _calibration_yaml:=/home/data/calibration/camera1.yaml _namespace:=camera1 _input_topic:=image_raw`
 
+Fish Eye
+
+`rosrun pe_camerainfo_publsher pe_calibration_publisher.py _calibration_yaml:=/home/data/calibration/camera1.yaml _namespace:=camera1 _input_topic:=image_raw _fisheye:=True`
 
 ### ROS YAML format
 

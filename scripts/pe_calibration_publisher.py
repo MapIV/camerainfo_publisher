@@ -1,15 +1,16 @@
 #!/usr/bin/env python
 from __future__ import print_function
 
-import roslib
-roslib.load_manifest('pe_camerainfo_publisher')
-
 import rospy
+import roslib
 import yaml
 import cv2
 import numpy as np
 from sensor_msgs.msg import CameraInfo
 from sensor_msgs.msg import Image
+
+roslib.load_manifest('pe_camerainfo_publisher')
+
 
 class PeCameraInfoPublisher:
     def __init__(self):
@@ -18,6 +19,8 @@ class PeCameraInfoPublisher:
         self.__namespace = rospy.get_param('~namespace', '/')
         self.__input_topic = rospy.get_param('~input_topic', '/')
         self.__calibration_yaml = rospy.get_param('~calibration_yaml', '/')
+        self.__is_fish_eye = rospy.get_param('~fisheye', 'False')
+        self.__alpha = rospy.get_param('~alpha', 0.0)
 
         self.__camera_info_msg = self.__parse_yaml(self.__calibration_yaml)
         rospy.loginfo("YAML Parsed correctly: {}".format(self.__calibration_yaml))
@@ -55,10 +58,17 @@ class PeCameraInfoPublisher:
             P = np.zeros((3, 4), dtype=np.float64)
             intrinsics = np.array(camera_info_msg.K, dtype=np.float64, copy=True).reshape((3, 3))
             distortion = np.array(camera_info_msg.D, dtype=np.float64, copy=True).reshape((len(camera_info_msg.D), 1))
-            ncm, _ = cv2.getOptimalNewCameraMatrix(intrinsics,
-                                                   distortion,
-                                                   (camera_info_msg.width, camera_info_msg.height),
-                                                   0.0)
+            if self.__is_fish_eye:
+                ncm = cv2.fisheye.estimateNewCameraMatrixForUndistortRectify(intrinsics,
+                                                                             distortion,
+                                                                             (camera_info_msg.width,
+                                                                              camera_info_msg.height),
+                                                                             self.__alpha)
+            else:
+                ncm, _ = cv2.getOptimalNewCameraMatrix(intrinsics,
+                                                       distortion,
+                                                       (camera_info_msg.width, camera_info_msg.height),
+                                                       self.__alpha)
             for j in range(3):
                 for i in range(3):
                     P[j, i] = ncm[j, i]
