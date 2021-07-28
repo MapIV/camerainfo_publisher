@@ -19,7 +19,7 @@ class PeCameraInfoPublisher:
         self.__namespace = rospy.get_param('~namespace', '/')
         self.__input_topic = rospy.get_param('~input_topic', '/')
         self.__calibration_yaml = rospy.get_param('~calibration_yaml', '/')
-        self.__is_fish_eye = rospy.get_param('~fisheye', 'False')
+        self.__is_fish_eye = rospy.get_param('~fisheye', False)
         self.__alpha = rospy.get_param('~alpha', 0.0)
 
         self.__camera_info_msg = self.__parse_yaml(self.__calibration_yaml)
@@ -59,12 +59,14 @@ class PeCameraInfoPublisher:
             intrinsics = np.array(camera_info_msg.K, dtype=np.float64, copy=True).reshape((3, 3))
             distortion = np.array(camera_info_msg.D, dtype=np.float64, copy=True).reshape((len(camera_info_msg.D), 1))
             if self.__is_fish_eye:
+                print("Missing Projection Matrix - Fisheye - Calculating ...")
                 ncm = cv2.fisheye.estimateNewCameraMatrixForUndistortRectify(intrinsics,
                                                                              distortion,
                                                                              (camera_info_msg.width,
                                                                               camera_info_msg.height),
                                                                              self.__alpha)
             else:
+                print("Missing Projection Matrix - Pinhole - Calculating ...")
                 ncm, _ = cv2.getOptimalNewCameraMatrix(intrinsics,
                                                        distortion,
                                                        (camera_info_msg.width, camera_info_msg.height),
