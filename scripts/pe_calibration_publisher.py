@@ -78,7 +78,10 @@ class PeCameraInfoPublisher:
             camera_info_msg.P = P.flatten().tolist()
         print(camera_info_msg.P)
 
-        camera_info_msg.distortion_model = calib_data["camera_model"]
+        if "camera_model" in calib_data:
+            camera_info_msg.distortion_model = calib_data["camera_model"]
+        elif "distortion_model" in calib_data:
+            camera_info_msg.distortion_model = calib_data["distortion_model"]
         return camera_info_msg
 
 
