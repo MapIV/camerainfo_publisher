@@ -16,7 +16,7 @@ class PeCameraInfoPublisher:
     def __init__(self):
         rospy.init_node("pe_camerainfo_publisher", anonymous=True)
 
-        self.__namespace = rospy.get_param('~namespace', '/')
+        
         self.__input_topic = rospy.get_param('~input_topic', '/')
         self.__calibration_yaml = rospy.get_param('~calibration_yaml', '/')
         self.__is_fish_eye = rospy.get_param('~fisheye', False)
@@ -25,11 +25,11 @@ class PeCameraInfoPublisher:
         self.__camera_info_msg = self.__parse_yaml(self.__calibration_yaml)
         rospy.loginfo("YAML Parsed correctly: {}".format(self.__calibration_yaml))
 
-        rospy.loginfo("Subscribed to: {}/{} [sensor_msgs/Image]".format(self.__namespace, self.__input_topic))
-        rospy.Subscriber(self.__namespace + "/" + self.__input_topic, Image, self.__image_callback)
+        rospy.loginfo("Subscribed to: {} [sensor_msgs/Image]".format(self.__input_topic))
+        rospy.Subscriber(self.__input_topic, Image, self.__image_callback)
 
-        rospy.loginfo("Publishing to: {} [sensor_msgs/CameraInfo]".format(self.__namespace + "/camera_info"))
-        self.__camera_info_pub = rospy.Publisher(self.__namespace + "/camera_info", CameraInfo, queue_size=1)
+        rospy.loginfo("Publishing to: {} [sensor_msgs/CameraInfo]".format("camera_info"))
+        self.__camera_info_pub = rospy.Publisher("camera_info", CameraInfo, queue_size=1)
 
         rospy.spin()
 
