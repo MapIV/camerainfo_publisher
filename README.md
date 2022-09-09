@@ -1,20 +1,44 @@
-# Pe CameraInfo Publisher
+# ROS2 camera_info calibration publisher
 
-### How to run
+This node parses a ROS CameraInfo YAML calibration file, subscribes to an image topic (`sensor_msg/msg/Image`), 
+and publishes the `camera_info` with the parameters contained in the YAML file
 
-`rosrun pe_camerainfo_publsher pe_calibration_publisher.py _calibration_yaml:=/PATH/TO/ros.yaml _namespace:=NAMESPACE _input_topic:=IMAGE_TOPIC`
+## How to compile
 
-i.e.
+In a ROS2 sourced workspace
 
-`rosrun pe_camerainfo_publsher pe_calibration_publisher.py _calibration_yaml:=/home/data/calibration/camera1.yaml _namespace:=camera1 _input_topic:=image_raw`
 
-Fish Eye
+1. Install dependencies with rosdep:
+`$ rosdep install --from-paths src --ignore-src -y`
+2. Compile:
+`$ colcon build`
 
-`rosrun pe_camerainfo_publsher pe_calibration_publisher.py _calibration_yaml:=/home/data/calibration/camera1.yaml _namespace:=camera1 _input_topic:=image_raw _fisheye:=True`
+## How to run
+1. Source the workspace `source install/setup.bash`
+2. Run:
+```
+$ ros2 run pe_calibration_publisher pe_calibration_publisher \
+    --ros-args -p "file:=/path/to/intrinsic_calibration.yaml" \
+    -r __ns:=/camera/namespace
+```
 
-### ROS YAML format
+## Compressed topics
+This node requires `sensor_msg/msg/Image` to synchronize the publication of the intrinsic parameters.
+To decompress a `sensor_msgs/msg/CompressedImage` you can do so from the CLI using the following command:
 
-For details check ROS docs
+```shell
+ros2 run image_transport republish compressed \
+    --ros-args --remap in/compressed:=/camera/namespace/image_raw/compressed 
+    --remap out:=/camera/namespace/image_raw
+```
+
+or integrate it into a launch file.
+
+## Composition
+
+![CalibrationPublisher](./doc/nodes.png)
+
+## ROS CameraInfo calibration
 
 ```yaml
 image_width: WIDTH
@@ -43,4 +67,5 @@ projection_matrix:
   data: [ FxO,    0.,    CxO,     0.     ,
           0.,     FyO,   CxO,     0.     ,
           0.,     0.,    1. ,     0.     ]
+
 ```

@@ -1,17 +1,23 @@
 <?xml version="1.0"?>
-<package format="2">
-    <name>pe_camerainfo_publisher</name>
-    <version>1.0.0</version>
-    <description>Perception Engine CameraInfo Publisher</description>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>pe_calibration_publisher</name>
+  <version>1.0.0</version>
+  <description>Calibration Publisher</description>
+  <maintainer email="contact@perceptionengine.jp">Perception Engine</maintainer>
+  <license>Apache 2</license>
 
-    <license>Apache 2.0</license>
+  <exec_depend>rclpy</exec_depend>
 
-    <author  email="abrahammonrroy@yahoo.com">Abraham Monrroy</author >
-    <maintainer email="abrahammonrroy@yahoo.com">Abraham Monrroy</maintainer>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
 
-    <buildtool_depend>catkin</buildtool_depend>
-    <exec_depend>rosapi</exec_depend>
-    <exec_depend>rospy</exec_depend>
-    <exec_depend>sensor_msgs</exec_depend>
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>python3-pytest</test_depend>
 
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
 </package>
