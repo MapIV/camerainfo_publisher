@@ -6,7 +6,7 @@ import cv2
 import numpy as np
 
 from rclpy.node import Node
-from sensor_msgs.msg import CameraInfo, Image
+from sensor_msgs.msg import CameraInfo, Image, CompressedImage
 
 
 class PeCalibrationPublisher(Node):
@@ -14,6 +14,7 @@ class PeCalibrationPublisher(Node):
         super().__init__('pe_calibration_publisher')
         self._filename = self.declare_parameter('file', '').value
         self._input_topic = self.declare_parameter('input_topic', 'image_raw').value
+        self._use_raw = self.declare_parameter('use_raw', True).value
         self.__alpha = self.declare_parameter('alpha', 0).value
 
         if self._filename == '':
@@ -23,16 +24,23 @@ class PeCalibrationPublisher(Node):
         self.__camera_info_msg = self.__parse_yaml(self._filename)
         self.info_publisher_ = self.create_publisher(CameraInfo, 'camera_info', 10)
 
-        self.image_sub_ = self.create_subscription(
-            Image,
-            self._input_topic,
-            self.image_callback,
-            10)
+        if self._use_raw:
+            self.image_sub_ = self.create_subscription(
+                Image,
+                self._input_topic,
+                self.image_callback,
+                10)
+        else:
+            self.image_sub_ = self.create_subscription(
+                CompressedImage,
+                self._input_topic+'/compressed',
+                self.image_callback,
+                10)
 
         self.get_logger().info('Loaded file: {}'.format(self._filename))
         self.counter = 0
 
-    def image_callback(self, msg: Image):
+    def image_callback(self, msg):
         self.__camera_info_msg.header = msg.header
         self.info_publisher_.publish(self.__camera_info_msg)
 

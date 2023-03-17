@@ -1,12 +1,11 @@
 # ROS2 camera_info calibration publisher
 
-This node parses a ROS CameraInfo YAML calibration file, subscribes to an image topic (`sensor_msg/msg/Image`), 
+This node parses a ROS CameraInfo YAML calibration file, subscribes to an image topic (`sensor_msg/msg/Image` or `sensor_msg/msg/CompressedImage`), 
 and publishes the `camera_info` with the parameters contained in the YAML file
 
 ## How to compile
 
 In a ROS2 sourced workspace
-
 
 1. Install dependencies with rosdep:
 `$ rosdep install --from-paths src --ignore-src -y`
@@ -18,21 +17,18 @@ In a ROS2 sourced workspace
 2. Run:
 ```
 $ ros2 run pe_calibration_publisher pe_calibration_publisher \
-    --ros-args -p "file:=/path/to/intrinsic_calibration.yaml" \
+    --ros-args -p use_raw:=True -p "file:=/path/to/intrinsic_calibration.yaml" \
     -r __ns:=/camera/namespace
 ```
 
 ## Compressed topics
-This node requires `sensor_msg/msg/Image` to synchronize the publication of the intrinsic parameters.
-To decompress a `sensor_msgs/msg/CompressedImage` you can do so from the CLI using the following command:
+Change the `use_raw` param to `False`. The subscriber will subscribe instead to `image_raw/compressed` (`sensor_msg/msg/CompressedImage`).
 
-```shell
-ros2 run image_transport republish compressed \
-    --ros-args --remap in/compressed:=/camera/namespace/image_raw/compressed 
-    --remap out:=/camera/namespace/image_raw
 ```
-
-or integrate it into a launch file.
+$ ros2 run pe_calibration_publisher pe_calibration_publisher \
+    --ros-args -p use_raw:=False -p "file:=/path/to/intrinsic_calibration.yaml" \
+    -r __ns:=/camera/namespace
+```
 
 ## Composition
 
