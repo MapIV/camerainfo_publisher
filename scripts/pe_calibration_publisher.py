@@ -64,7 +64,8 @@ class PeCameraInfoPublisher:
                                                                              distortion,
                                                                              (camera_info_msg.width,
                                                                               camera_info_msg.height),
-                                                                             self.__alpha)
+                                                                             np.eye(3), 
+                                                                             balance=self.__alpha)
             else:
                 print("Missing Projection Matrix - Pinhole - Calculating ...")
                 ncm, _ = cv2.getOptimalNewCameraMatrix(intrinsics,
